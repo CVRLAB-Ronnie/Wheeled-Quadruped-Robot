@@ -1,0 +1,258 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <material name="orange">
+    <color rgba="1.0 0.5 0.0 1"/>
+  </material>
+  <material name="black">
+    <color rgba="0.1 0.1 0.1 1"/>
+  </material>
+  <material name="grey">
+    <color rgba="0.6 0.6 0.6 1"/>
+  </material>
+  <material name="purple">
+    <color rgba="0.6 0.196 0.8 1"/>
+  </material>
+  <material name="red">
+    <color rgba="0.8 0 0.2 1"/>
+  </material>
+  <material name="white">
+    <color rgba="1 1 1 1"/>
+  </material>
+
+  <xacro:macro name="rev_joint" params="name type axis_xyz origin_rpy origin_xyz parent child effort velocity damping friction upper lower">
+    <joint name="${name}" type="${type}">
+      <axis xyz="${axis_xyz}" />
+      <origin rpy="${origin_rpy}" xyz="${origin_xyz}" />
+      <parent link="${parent}" />
+      <child link="${child}" />
+      <limit effort="${effort}" velocity="${velocity}" lower="${lower}" upper="${upper}"/>
+      <dynamics damping="${damping}" friction="${friction}" />
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="con_joint" params="name type axis_xyz origin_rpy origin_xyz parent child effort velocity damping friction">
+    <joint name="${name}" type="${type}">
+      <axis xyz="${axis_xyz}" />
+      <origin rpy="${origin_rpy}" xyz="${origin_xyz}" />
+      <parent link="${parent}" />
+      <child link="${child}" />
+      <limit effort="${effort}" velocity="${velocity}"/>
+      <dynamics damping="${damping}" friction="${friction}" />
+    </joint>
+  </xacro:macro>  
+
+  <xacro:macro name="frame_joint" params="name type origin_rpy origin_xyz parent child">
+    <joint name="${name}" type="${type}">
+      <origin rpy="${origin_rpy}" xyz="${origin_xyz}" />
+      <parent link="${parent}" />
+      <child link="${child}" />
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="mesh_link" params="name origin_xyz origin_rpy meshfile meshscale c_xyz matname mass i_xyz i_rpy length width height">
+    <link name="${name}">
+      <visual>
+        <origin rpy="${origin_rpy}" xyz="${origin_xyz}" />
+        <geometry>
+          <mesh filename="${meshfile}" scale="${meshscale}"/>
+        </geometry>
+        <material name="${matname}"/>
+      </visual>
+
+      <collision>
+        <!--<origin rpy="${origin_rpy}" xyz="${c_xyz}" />-->
+        <origin rpy="${origin_rpy}" xyz="${origin_xyz}" />
+        <geometry>
+          <!--<box size="${length} ${width} ${height}" />-->
+         <mesh filename="${meshfile}" scale="${meshscale}"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <mass value="${mass}" />
+        <origin rpy="${i_rpy}" xyz="${i_xyz}" /> 
+        <inertia ixx="${mass * (width * width + height * height)/12.0}" ixy="${0}" ixz="${0}" iyx="${0}" iyy="${mass * (length * length + height * height)/12.0}" iyz="${0}" izx="${0}" izy="${0}" izz="${mass * (length * length + width * width)/12.0}" />
+      </inertial>
+
+    </link>
+    <gazebo reference="${name}">
+      <kp>1e+10</kp>
+      <kd>100</kd>
+      <mu1>0.02</mu1> <!-- 0.8-->
+      <mu2>0.02</mu2> <!-- 0.8-->   
+      <maxVel>0</maxVel>
+      <minDepth>0.001</minDepth>
+      <self_collide>0</self_collide>
+      <gravity>1</gravity>
+        <xacro:if value="${matname == 'black'}">
+          <material>Gazebo/Black</material>
+        </xacro:if>
+        <xacro:if value="${matname == 'orange'}">
+          <material>Gazebo/Orange</material>
+        </xacro:if>
+        <xacro:if value="${matname == 'white'}">
+          <material>Gazebo/White</material>
+        </xacro:if>
+        <xacro:if value="${matname == 'red'}">
+          <material>Gazebo/Red</material>
+        </xacro:if>
+        <xacro:if value="${matname == 'purple'}">
+          <material>Gazebo/Purple</material>
+        </xacro:if>
+        
+    </gazebo>
+  </xacro:macro>
+  
+  <xacro:macro name="mesh_link_body" params="name origin_xyz origin_rpy meshfile meshscale c_xyz matname mass i_xyz i_rpy length width height">
+    <link name="${name}">
+      <visual>
+        <origin rpy="${origin_rpy}" xyz="${origin_xyz}" />
+        <geometry>
+          <mesh filename="${meshfile}" scale="${meshscale}"/>
+        </geometry>
+        <material name="${matname}"/>
+      </visual>
+
+      <collision>
+        <origin rpy="${origin_rpy}" xyz="${c_xyz}" />
+        <geometry>
+         <!--<box size="${length} ${width} ${height}" />-->
+         <mesh filename="${meshfile}" scale="${meshscale}"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <mass value="${mass}" />
+        <origin rpy="${i_rpy}" xyz="${i_xyz}" /> 
+        <inertia ixx="${mass * (width * width + height * height)/12.0}" ixy="${0}" ixz="${0}" iyx="${0}" iyy="${mass * (length * length + height * height)/12.0}" iyz="${0}" izx="${0}" izy="${0}" izz="${mass * (length * length + width * width)/12.0}" />
+      </inertial>
+
+    </link>
+    <gazebo reference="${name}">
+       <surface>
+      <contact>
+        <ode>
+          <kp>1000000.0</kp>
+          <kd>1.0</kd>
+          <max_vel>0.0</max_vel>
+          <min_depth>0.0</min_depth>
+        </ode>
+      </contact>
+    </surface>
+      <kp>1e+10</kp>
+      <kd>1</kd>
+      <mu1>0.8</mu1> <!-- 0.8-->
+      <mu2>0.8</mu2> <!-- 0.8-->
+      <maxVel>0.0</maxVel>
+      <minDepth>0.001</minDepth>
+      <self_collide>0</self_collide>
+      <gravity>1</gravity>
+        <xacro:if value="${matname == 'black'}">
+          <material>Gazebo/Black</material>
+        </xacro:if>
+        <xacro:if value="${matname == 'orange'}">
+          <material>Gazebo/Orange</material>
+        </xacro:if>
+        <xacro:if value="${matname == 'white'}">
+          <material>Gazebo/White</material>
+        </xacro:if>
+        <xacro:if value="${matname == 'red'}">
+          <material>Gazebo/Red</material>
+        </xacro:if>
+        <xacro:if value="${matname == 'purple'}">
+          <material>Gazebo/Purple</material>
+        </xacro:if>
+        <xacro:if value="${matname == 'green'}">
+          <material>Gazebo/Green</material>
+        </xacro:if>
+        
+    </gazebo>
+  </xacro:macro>
+  
+  <xacro:macro name="mesh_link_sphere" params="name origin_xyz origin_rpy meshfile meshscale c_xyz matname mass i_xyz i_rpy length width height radius i_meshfile">
+    <link name="${name}">
+      <visual>
+        <origin rpy="${origin_rpy}" xyz="${origin_xyz}" />
+        <geometry>
+          <mesh filename="${meshfile}" scale="${meshscale}"/>
+        </geometry>
+        <material name="${matname}"/>
+      </visual>
+
+      <collision name="collision">
+        <!--<origin rpy="${origin_rpy}" xyz="${c_xyz}" />-->
+        <origin rpy="${origin_rpy}" xyz="${origin_xyz}" />
+        <geometry>
+          <!--<cylinder radius="${radius}" length="0.015"/>-->
+          <mesh filename="${i_meshfile}" scale="${meshscale}"/>
+        </geometry>
+        <contact_coefficients kd="1.0" kp="1e+10" mu="10000.1"/>
+      </collision>
+      <inertial>
+        <mass value="${mass}" />
+        <origin rpy="${i_rpy}" xyz="${i_xyz}" /> 
+        <inertia ixx="${mass * (width * width + height * height)/12.0}" ixy="${0}" ixz="${0}" iyx="${0}" iyy="${mass * (length * length + height * height)/12.0}" iyz="${0}" izx="${0}" izy="${0}" izz="${mass * (length * length + width * width)/12.0}" />
+      </inertial>
+    </link>
+
+    <gazebo reference="${name}">
+      <surface>
+            <friction>
+            <torsional>
+            <coefficient>1.0</coefficient>
+            <use_patch_radius>true</use_patch_radius>
+            <surface_radius>0.04</surface_radius>
+            <patch_radius>0.04</patch_radius>
+            <ode>
+            <slip>0</slip>
+            </ode>
+          </torsional>
+              <ode>
+                <mu>1.000000</mu>
+                <mu2>1.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
+              </ode>
+              </friction>
+              <bounce>
+              <restitution_coefficient>0.000000</restitution_coefficient>
+              <threshold>100000.000000</threshold>
+            </bounce>
+            
+            <contact>
+              <ode>
+                <soft_cfm>0.20000</soft_cfm>
+                <soft_erp>0.500000</soft_erp>
+                <kp>1e+5</kp>
+                <kd>1e+2</kd>
+                <max_vel>0.000000</max_vel>
+                <min_depth>0.005000</min_depth>
+              </ode>
+            </contact>
+          </surface>
+      
+      <self_collide>1</self_collide>
+      <gravity>1</gravity>
+      <max_contacts>50</max_contacts>
+      <xacro:if value="${matname == 'black'}">
+          <material>Gazebo/Black</material>
+        </xacro:if>
+        <xacro:if value="${matname == 'orange'}">
+          <material>Gazebo/Orange</material>
+        </xacro:if>
+        <xacro:if value="${matname == 'white'}">
+          <material>Gazebo/White</material>
+        </xacro:if>
+        <xacro:if value="${matname == 'red'}">
+          <material>Gazebo/Red</material>
+        </xacro:if>
+        <xacro:if value="${matname == 'purple'}">
+          <material>Gazebo/Purple</material>
+        </xacro:if>
+    </gazebo>
+  </xacro:macro>
+
+
+</robot>

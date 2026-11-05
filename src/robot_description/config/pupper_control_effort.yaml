@@ -1,0 +1,88 @@
+controller_manager:
+  ros__parameters:
+     use_sim_time: True
+     update_rate: 250  # H
+     joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+     
+     velocity_controller:
+      type: velocity_controllers/JointGroupVelocityController
+     
+     joint_group_effort_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+velocity_controller:
+  ros__parameters:
+    use_sim_time: True
+    joints:
+      - motor_front_left_wheel
+      - motor_front_right_wheel    
+      - motor_back_left_wheel      
+      - motor_back_right_wheel
+        
+    command_interfaces:
+      - velocity
+
+    state_interfaces:
+      - position
+      - velocity
+
+    state_publish_rate: 50.0 # Defaults to 50
+    action_monitor_rate: 20.0 # Defaults to 20
+
+    allow_partial_joints_goal: false # Defaults to false
+    hardware_state_has_offset: true
+    deduce_states_from_derivatives: true
+    constraints:
+      stopped_velocity_tolerance: 0.01 # Defaults to 0.01
+      goal_time: 0.0 # Defaults to 0.0 (start immediately)
+          
+      
+joint_group_effort_controller:
+  ros__parameters:
+    use_sim_time: True
+    joints:
+      - motor_front_left_coax
+      - motor_front_left_thigh
+      - motor_front_left_leg
+      - motor_front_right_coax
+      - motor_front_right_thigh
+      - motor_front_right_leg
+      - motor_back_left_coax
+      - motor_back_left_thigh
+      - motor_back_left_leg
+      - motor_back_right_coax
+      - motor_back_right_thigh
+      - motor_back_right_leg
+
+    command_interfaces:
+      - effort
+
+    state_interfaces:
+      - position
+      - velocity
+
+    gains:
+        motor_front_left_coax : {p: 9.0, i: 0.03, d: 0.3055, i_clamp_max: 2.0,i_clamp_min: -2.0}   
+        motor_front_left_thigh : {p: 9.0, i: 0.03, d: 0.3055, i_clamp_max: 2.0,i_clamp_min: -2.0}    
+        motor_front_left_leg : {p: 9.0, i: 0.03, d: 0.3055, i_clamp_max: 2.0,i_clamp_min: -2.0}   
+        motor_front_right_coax : {p: 9.0, i: 0.03, d: 0.3055, i_clamp_max: 2.0,i_clamp_min: -2.0}   
+        motor_front_right_thigh : {p: 9.0, i: 0.03, d: 0.3055, i_clamp_max: 2.0,i_clamp_min: -2.0}   
+        motor_front_right_leg : {p: 9.0, i: 0.03, d: 0.3055, i_clamp_max: 2.0,i_clamp_min: -2.0}   
+        motor_back_left_coax : {p: 9.0, i: 0.03, d: 0.3055, i_clamp_max: 2.0,i_clamp_min: -2.0}   
+        motor_back_left_thigh : {p: 9.0, i: 0.03, d: 0.3055, i_clamp_max: 2.0,i_clamp_min: -2.0}   
+        motor_back_left_leg : {p: 9.0, i: 0.03, d: 0.3055, i_clamp_max: 2.0,i_clamp_min: -2.0}   
+        motor_back_right_coax : {p: 9.0, i: 0.03, d: 0.3055, i_clamp_max: 2.0,i_clamp_min: -2.0}   
+        motor_back_right_thigh : {p: 9.0, i: 0.03, d: 0.3055, i_clamp_max: 2.0,i_clamp_min: -2.0}   
+        motor_back_right_leg : {p: 9.0, i: 0.03, d: 0.3055, i_clamp_max: 2.0,i_clamp_min: -2.0}   
+        
+      #state_publish_rate: 50.0 # Defaults to 50
+      #action_monitor_rate: 20.0 # Defaults to 20
+
+      #allow_partial_joints_goal: false # Defaults to false
+      #hardware_state_has_offset: true
+      #deduce_states_from_derivatives: true
+      #constraints:
+      #stopped_velocity_tolerance: 0.01 # Defaults to 0.01
+      #goal_time: 0.0 # Defaults to 0.0 (start immediately)  
+        
